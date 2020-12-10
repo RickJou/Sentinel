@@ -16,6 +16,7 @@
 package com.alibaba.csp.sentinel.dashboard.apollo.publish;
 
 import com.alibaba.csp.sentinel.dashboard.apollo.ApolloConfigUtil;
+import com.alibaba.csp.sentinel.dashboard.apollo.ApolloPublisher;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.ApiDefinitionEntity;
 import com.alibaba.csp.sentinel.dashboard.rule.DynamicRulePublisher;
 import org.springframework.beans.factory.annotation.Autowired;

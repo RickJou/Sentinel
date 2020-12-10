@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.csp.sentinel.dashboard.apollo.provider;
+package com.alibaba.csp.sentinel.dashboard.apollo;
 
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.FlowRuleEntity;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.RuleEntity;
@@ -40,10 +40,12 @@ public class ApolloProvider<T> {
     @Autowired
     private ApolloOpenApiClient apolloOpenApiClient;
 
+    @Autowired
+    private ApolloConfig apolloConfig;
+
 
     public List<T> getRules(String appName, String apploRowKey, Class clazz) {
-        String appId = "sentinel-flow-rules";
-        OpenNamespaceDTO openNamespaceDTO = apolloOpenApiClient.getNamespace(appId, "DEV", "default", "IC.common-rules");
+        OpenNamespaceDTO openNamespaceDTO = apolloOpenApiClient.getNamespace(apolloConfig.getAppId(), apolloConfig.getEnv(), apolloConfig.getCluster(), apolloConfig.getNamespace());
         String rules = openNamespaceDTO
                 .getItems()
                 .stream()

@@ -20,6 +20,7 @@ import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.FlowRuleEntity;
 import com.alibaba.csp.sentinel.datasource.Converter;
 import com.alibaba.fastjson.JSON;
 import com.ctrip.framework.apollo.openapi.client.ApolloOpenApiClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,13 +33,80 @@ import java.util.List;
 @Configuration
 public class ApolloConfig {
 
+    @Value("${apollo.portal.Url}")
+    private String url;
+
+    @Value("${apollo.portal.token}")
+    private String token;
+
+    @Value("${apollo.appId}")
+    private String appId;
+
+    @Value("${apollo.env}")
+    private String env;
+
+    @Value("${apollo.cluster}")
+    private String cluster;
+
+    @Value("${apollo.namespace}")
+    private String namespace;
+
+
     @Bean
     public ApolloOpenApiClient apolloOpenApiClient() {
         ApolloOpenApiClient client = ApolloOpenApiClient.newBuilder()
-            .withPortalUrl("http://172.16.0.202:8083/")
-            .withToken("7c5a1aadec6e31c33712bc76cebceb164ff1be56")
+            .withPortalUrl(url)
+            .withToken(token)
             .build();
         return client;
 
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
+    }
+
+    public String getCluster() {
+        return cluster;
+    }
+
+    public void setCluster(String cluster) {
+        this.cluster = cluster;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 }

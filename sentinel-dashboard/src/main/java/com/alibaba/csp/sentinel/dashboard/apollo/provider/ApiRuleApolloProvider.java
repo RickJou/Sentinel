@@ -16,8 +16,8 @@
 package com.alibaba.csp.sentinel.dashboard.apollo.provider;
 
 import com.alibaba.csp.sentinel.dashboard.apollo.ApolloConfigUtil;
+import com.alibaba.csp.sentinel.dashboard.apollo.ApolloProvider;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.ApiDefinitionEntity;
-import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.GatewayFlowRuleEntity;
 import com.alibaba.csp.sentinel.dashboard.rule.DynamicRuleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
