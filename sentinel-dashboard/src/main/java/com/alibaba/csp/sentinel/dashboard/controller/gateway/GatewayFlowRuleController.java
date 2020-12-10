@@ -16,6 +16,8 @@
 package com.alibaba.csp.sentinel.dashboard.controller.gateway;
 
 
+import com.alibaba.csp.sentinel.dashboard.apollo.provider.GatewayFlowRuleApolloProvider;
+import com.alibaba.csp.sentinel.dashboard.apollo.publish.GatewayFlowRuleApolloPublisher;
 import com.alibaba.csp.sentinel.dashboard.auth.AuthAction;
 import com.alibaba.csp.sentinel.dashboard.auth.AuthService;
 import com.alibaba.csp.sentinel.dashboard.client.SentinelApiClient;
@@ -28,6 +30,7 @@ import com.alibaba.csp.sentinel.dashboard.domain.vo.gateway.rule.GatewayParamFlo
 import com.alibaba.csp.sentinel.dashboard.domain.vo.gateway.rule.UpdateFlowRuleReqVo;
 import com.alibaba.csp.sentinel.dashboard.repository.gateway.InMemGatewayFlowRuleStore;
 import com.alibaba.csp.sentinel.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +62,12 @@ public class GatewayFlowRuleController {
     @Autowired
     private SentinelApiClient sentinelApiClient;
 
+    @Autowired
+    private GatewayFlowRuleApolloProvider gatewayFlowRuleApolloProvider;
+    @Autowired
+    private GatewayFlowRuleApolloPublisher gatewayFlowRuleApolloPublisher;
+
+
     @GetMapping("/list.json")
     @AuthAction(AuthService.PrivilegeType.READ_RULE)
     public Result<List<GatewayFlowRuleEntity>> queryFlowRules(String app, String ip, Integer port) {
@@ -66,19 +75,13 @@ public class GatewayFlowRuleController {
         if (StringUtil.isEmpty(app)) {
             return Result.ofFail(-1, "app can't be null or empty");
         }
-        if (StringUtil.isEmpty(ip)) {
-            return Result.ofFail(-1, "ip can't be null or empty");
-        }
-        if (port == null) {
-            return Result.ofFail(-1, "port can't be null");
-        }
 
+        //从apollo中进行查询
         try {
-            List<GatewayFlowRuleEntity> rules = sentinelApiClient.fetchGatewayFlowRules(app, ip, port).get();
-            repository.saveAll(rules);
+            List<GatewayFlowRuleEntity> rules = refreshAllApolloRules(app);
             return Result.ofSuccess(rules);
         } catch (Throwable throwable) {
-            logger.error("query gateway flow rules error:", throwable);
+            logger.error("query gateway flow rules by apollo error:", throwable);
             return Result.ofThrowable(-1, throwable);
         }
     }
@@ -236,16 +239,9 @@ public class GatewayFlowRuleController {
         entity.setGmtCreate(date);
         entity.setGmtModified(date);
 
-        try {
-            entity = repository.save(entity);
-        } catch (Throwable throwable) {
-            logger.error("add gateway flow rule error:", throwable);
-            return Result.ofThrowable(-1, throwable);
-        }
 
-        if (!publishRules(app, ip, port)) {
-            logger.warn("publish gateway flow rules fail after add");
-        }
+        //保存规则至apollo
+        addRuleToApollo(app, entity);
 
         return Result.ofSuccess(entity);
     }
@@ -382,17 +378,11 @@ public class GatewayFlowRuleController {
         Date date = new Date();
         entity.setGmtModified(date);
 
-        try {
-            entity = repository.save(entity);
-        } catch (Throwable throwable) {
-            logger.error("update gateway flow rule error:", throwable);
-            return Result.ofThrowable(-1, throwable);
-        }
 
-        if (!publishRules(app, entity.getIp(), entity.getPort())) {
-            logger.warn("publish gateway flow rules fail after update");
+        //保存规则至apollo
+        if (!saveRuleToApollo(app, entity)) {
+            return Result.ofFail(-1, "找不到对应的规则,无法修改");
         }
-
         return Result.ofSuccess(entity);
     }
 
@@ -400,26 +390,13 @@ public class GatewayFlowRuleController {
     @PostMapping("/delete.json")
     @AuthAction(AuthService.PrivilegeType.DELETE_RULE)
     public Result<Long> deleteFlowRule(Long id) {
-
         if (id == null) {
             return Result.ofFail(-1, "id can't be null");
         }
 
-        GatewayFlowRuleEntity oldEntity = repository.findById(id);
-        if (oldEntity == null) {
-            return Result.ofSuccess(null);
-        }
-
-        try {
-            repository.delete(id);
-        } catch (Throwable throwable) {
-            logger.error("delete gateway flow rule error:", throwable);
-            return Result.ofThrowable(-1, throwable);
-        }
-
-        if (!publishRules(oldEntity.getApp(), oldEntity.getIp(), oldEntity.getPort())) {
-            logger.warn("publish gateway flow rules fail after delete");
-        }
+        //从apollo中删除
+        GatewayFlowRuleEntity entity = repository.findById(id);
+        deleteRuleByApollo(entity);
 
         return Result.ofSuccess(id);
     }
@@ -427,5 +404,108 @@ public class GatewayFlowRuleController {
     private boolean publishRules(String app, String ip, Integer port) {
         List<GatewayFlowRuleEntity> rules = repository.findAllByMachine(MachineInfo.of(app, ip, port));
         return sentinelApiClient.modifyGatewayFlowRules(app, ip, port, rules);
+    }
+
+
+    /**
+     * 规则列表中是否包含该规则
+     *
+     * @param rules
+     * @param rule
+     * @return null:不存在; or 元素所在的下标
+     */
+    private Integer containerRule(List<GatewayFlowRuleEntity> rules, GatewayFlowRuleEntity rule) {
+        for (int i = 0; i < rules.size(); i++) {
+            boolean resourceModelEquals = rules.get(i).getResourceMode() == rule.getResourceMode();
+            boolean resourceEquals = StringUtils.equals(rules.get(i).getResource(), rule.getResource());
+
+            //api类型和api名称认为是唯一的key
+            if (resourceModelEquals && resourceEquals) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 删除apollo中的规则
+     *
+     * @param entity
+     * @return
+     */
+    private boolean deleteRuleByApollo(GatewayFlowRuleEntity entity) {
+        List<GatewayFlowRuleEntity> rules = gatewayFlowRuleApolloProvider.getRules(entity.getApp());
+
+        Integer index = containerRule(rules, entity);
+        if (index != null) {
+            rules.remove(index.intValue());
+        }
+
+        try {
+            gatewayFlowRuleApolloPublisher.publish(entity.getApp(), rules);
+        } catch (Exception ex) {
+            logger.error("delete gateway flow rule by Apollo error:", ex);
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * 添加规则
+     *
+     * @param app
+     * @param entity
+     * @return
+     */
+    private boolean addRuleToApollo(String app, GatewayFlowRuleEntity entity) {
+        try {
+            List<GatewayFlowRuleEntity> rules = gatewayFlowRuleApolloProvider.getRules(app);
+            rules.add(entity);
+            gatewayFlowRuleApolloPublisher.publish(app, rules);
+        } catch (Exception ex) {
+            logger.error("save gateway flow rule to Apollo error:", ex);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 保存规则
+     *
+     * @return
+     */
+    private boolean saveRuleToApollo(String app, GatewayFlowRuleEntity entity) {
+        List<GatewayFlowRuleEntity> rules = gatewayFlowRuleApolloProvider.getRules(app);
+
+        Integer index = containerRule(rules, entity);
+        if (index != null) {
+            rules.set(index, entity);
+        } else {
+            logger.info("找不到对应的规则,无法修改");
+            return false;
+        }
+
+        try {
+            gatewayFlowRuleApolloPublisher.publish(app, rules);
+        } catch (Exception ex) {
+            logger.error("save gateway flow rule to Apollo error:", ex);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 将apollo中的规则刷新到内存中
+     *
+     * @param app
+     */
+    private List<GatewayFlowRuleEntity> refreshAllApolloRules(String app) {
+        List<GatewayFlowRuleEntity> rules = gatewayFlowRuleApolloProvider.getRules(app);
+        repository.saveAll(rules);
+        return rules;
     }
 }

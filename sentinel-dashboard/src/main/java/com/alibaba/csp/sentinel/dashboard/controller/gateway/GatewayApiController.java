@@ -15,11 +15,14 @@
  */
 package com.alibaba.csp.sentinel.dashboard.controller.gateway;
 
+import com.alibaba.csp.sentinel.dashboard.apollo.provider.ApiRuleApolloProvider;
+import com.alibaba.csp.sentinel.dashboard.apollo.publish.ApiRuleApolloPublisher;
 import com.alibaba.csp.sentinel.dashboard.auth.AuthAction;
 import com.alibaba.csp.sentinel.dashboard.auth.AuthService;
 import com.alibaba.csp.sentinel.dashboard.client.SentinelApiClient;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.ApiDefinitionEntity;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.ApiPredicateItemEntity;
+import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.GatewayFlowRuleEntity;
 import com.alibaba.csp.sentinel.dashboard.discovery.MachineInfo;
 import com.alibaba.csp.sentinel.dashboard.domain.Result;
 import com.alibaba.csp.sentinel.dashboard.domain.vo.gateway.api.AddApiReqVo;
@@ -27,6 +30,7 @@ import com.alibaba.csp.sentinel.dashboard.domain.vo.gateway.api.ApiPredicateItem
 import com.alibaba.csp.sentinel.dashboard.domain.vo.gateway.api.UpdateApiReqVo;
 import com.alibaba.csp.sentinel.dashboard.repository.gateway.InMemApiDefinitionStore;
 import com.alibaba.csp.sentinel.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +60,11 @@ public class GatewayApiController {
     @Autowired
     private SentinelApiClient sentinelApiClient;
 
+    @Autowired
+    private ApiRuleApolloProvider apiRuleApolloProvider;
+    @Autowired
+    private ApiRuleApolloPublisher apiRuleApolloPublisher;
+
     @GetMapping("/list.json")
     @AuthAction(AuthService.PrivilegeType.READ_RULE)
     public Result<List<ApiDefinitionEntity>> queryApis(String app, String ip, Integer port) {
@@ -63,19 +72,13 @@ public class GatewayApiController {
         if (StringUtil.isEmpty(app)) {
             return Result.ofFail(-1, "app can't be null or empty");
         }
-        if (StringUtil.isEmpty(ip)) {
-            return Result.ofFail(-1, "ip can't be null or empty");
-        }
-        if (port == null) {
-            return Result.ofFail(-1, "port can't be null");
-        }
 
+        //从apollo中进行查询
         try {
-            List<ApiDefinitionEntity> apis = sentinelApiClient.fetchApis(app, ip, port).get();
-            repository.saveAll(apis);
-            return Result.ofSuccess(apis);
+            List<ApiDefinitionEntity> rules = refreshAllApolloRules(app);
+            return Result.ofSuccess(rules);
         } catch (Throwable throwable) {
-            logger.error("queryApis error:", throwable);
+            logger.error("query gateway flow rules by apollo error:", throwable);
             return Result.ofThrowable(-1, throwable);
         }
     }
@@ -140,25 +143,17 @@ public class GatewayApiController {
         entity.setPredicateItems(new LinkedHashSet<>(predicateItemEntities));
 
         // 检查API名称不能重复
-        List<ApiDefinitionEntity> allApis = repository.findAllByMachine(MachineInfo.of(app.trim(), ip.trim(), port));
+        /*List<ApiDefinitionEntity> allApis = repository.findAllByMachine(MachineInfo.of(app.trim(), ip.trim(), port));
         if (allApis.stream().map(o -> o.getApiName()).anyMatch(o -> o.equals(apiName.trim()))) {
             return Result.ofFail(-1, "apiName exists: " + apiName);
-        }
+        }*/
 
         Date date = new Date();
         entity.setGmtCreate(date);
         entity.setGmtModified(date);
 
-        try {
-            entity = repository.save(entity);
-        } catch (Throwable throwable) {
-            logger.error("add gateway api error:", throwable);
-            return Result.ofThrowable(-1, throwable);
-        }
-
-        if (!publishApis(app, ip, port)) {
-            logger.warn("publish gateway apis fail after add");
-        }
+        //保存规则至apollo
+        addRuleToApollo(app, entity);
 
         return Result.ofSuccess(entity);
     }
@@ -212,15 +207,9 @@ public class GatewayApiController {
         Date date = new Date();
         entity.setGmtModified(date);
 
-        try {
-            entity = repository.save(entity);
-        } catch (Throwable throwable) {
-            logger.error("update gateway api error:", throwable);
-            return Result.ofThrowable(-1, throwable);
-        }
-
-        if (!publishApis(app, entity.getIp(), entity.getPort())) {
-            logger.warn("publish gateway apis fail after update");
+        //保存规则至apollo
+        if (!saveRuleToApollo(app, entity)) {
+            return Result.ofFail(-1, "找不到对应的规则,无法修改");
         }
 
         return Result.ofSuccess(entity);
@@ -234,21 +223,9 @@ public class GatewayApiController {
             return Result.ofFail(-1, "id can't be null");
         }
 
-        ApiDefinitionEntity oldEntity = repository.findById(id);
-        if (oldEntity == null) {
-            return Result.ofSuccess(null);
-        }
-
-        try {
-            repository.delete(id);
-        } catch (Throwable throwable) {
-            logger.error("delete gateway api error:", throwable);
-            return Result.ofThrowable(-1, throwable);
-        }
-
-        if (!publishApis(oldEntity.getApp(), oldEntity.getIp(), oldEntity.getPort())) {
-            logger.warn("publish gateway apis fail after delete");
-        }
+        //从apollo中删除
+        ApiDefinitionEntity entity = repository.findById(id);
+        deleteRuleByApollo(entity);
 
         return Result.ofSuccess(id);
     }
@@ -256,5 +233,108 @@ public class GatewayApiController {
     private boolean publishApis(String app, String ip, Integer port) {
         List<ApiDefinitionEntity> apis = repository.findAllByMachine(MachineInfo.of(app, ip, port));
         return sentinelApiClient.modifyApis(app, ip, port, apis);
+    }
+
+
+    /**
+     * 规则列表中是否包含该规则
+     *
+     * @param rules
+     * @param rule
+     * @return null:不存在; or 元素所在的下标
+     */
+    private Integer containerRule(List<ApiDefinitionEntity> rules, ApiDefinitionEntity rule) {
+        for (int i = 0; i < rules.size(); i++) {
+            boolean resourceModelEquals = StringUtils.equals(rules.get(i).getApiName(), rule.getApiName());
+
+            //api类型和api名称认为是唯一的key
+            if (resourceModelEquals) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 删除apollo中的规则
+     *
+     * @param entity
+     * @return
+     */
+    private boolean deleteRuleByApollo(ApiDefinitionEntity entity) {
+        List<ApiDefinitionEntity> rules = apiRuleApolloProvider.getRules(entity.getApp());
+
+        Integer index = containerRule(rules, entity);
+        if (index != null) {
+            rules.remove(index.intValue());
+        }
+
+        try {
+            apiRuleApolloPublisher.publish(entity.getApp(), rules);
+        } catch (Exception ex) {
+            logger.error("delete gateway flow rule by Apollo error:", ex);
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * 添加规则
+     *
+     * @param app
+     * @param entity
+     * @return
+     */
+    private boolean addRuleToApollo(String app, ApiDefinitionEntity entity) {
+        try {
+            List<ApiDefinitionEntity> rules = apiRuleApolloProvider.getRules(app);
+            rules.add(entity);
+            apiRuleApolloPublisher.publish(app, rules);
+        } catch (Exception ex) {
+            logger.error("save gateway flow rule to Apollo error:", ex);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 保存规则
+     *
+     * @return
+     */
+    private boolean saveRuleToApollo(String app, ApiDefinitionEntity entity) {
+        List<ApiDefinitionEntity> rules = apiRuleApolloProvider.getRules(app);
+
+        Integer index = containerRule(rules, entity);
+        if (index != null) {
+            rules.set(index, entity);
+        } else {
+            logger.info("找不到对应的规则,无法修改");
+            return false;
+        }
+
+        try {
+            apiRuleApolloPublisher.publish(app, rules);
+        } catch (Exception ex) {
+            logger.error("save gateway flow rule to Apollo error:", ex);
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * 将apollo中的规则刷新到内存中
+     *
+     * @param app
+     */
+    private List<ApiDefinitionEntity> refreshAllApolloRules(String app) {
+        List<ApiDefinitionEntity> rules = apiRuleApolloProvider.getRules(app);
+        repository.saveAll(rules);
+        return rules;
     }
 }
