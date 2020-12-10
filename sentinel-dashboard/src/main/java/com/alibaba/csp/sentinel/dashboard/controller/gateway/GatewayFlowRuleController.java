@@ -241,7 +241,17 @@ public class GatewayFlowRuleController {
 
 
         //保存规则至apollo
+        refreshAllApolloRules(app);
+        List<GatewayFlowRuleEntity> existsRules = repository.findAllByApp(app);
+        if (containerRule(existsRules, entity) != null) {
+            return Result.ofFail(-1, "the rule exist");
+        }
+
         addRuleToApollo(app, entity);
+
+        //测试网关规则触发用
+        //refreshAllApolloRules(app);
+        //publishRules(app, ip, port);
 
         return Result.ofSuccess(entity);
     }

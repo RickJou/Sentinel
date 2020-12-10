@@ -152,6 +152,12 @@ public class GatewayApiController {
         entity.setGmtCreate(date);
         entity.setGmtModified(date);
 
+        refreshAllApolloRules(app);
+        List<ApiDefinitionEntity> existsRules = repository.findAllByApp(app);
+        if (containerRule(existsRules, entity) != null) {
+            return Result.ofFail(-1, "名称已经存在");
+        }
+
         //保存规则至apollo
         addRuleToApollo(app, entity);
 
