@@ -46,6 +46,16 @@ public class GatewayFlowRule {
      */
     private GatewayParamFlowItem paramItem;
 
+
+    //是否使用自定义返回的流控报文
+    private boolean useResponseBody;
+
+    //返回自定义http status
+    private Integer limitStatus;
+
+    //返回自定义报文内容
+    private String limitResponseBody;
+
     public GatewayFlowRule() {}
 
     public GatewayFlowRule(String resource) {
@@ -131,6 +141,30 @@ public class GatewayFlowRule {
     public GatewayFlowRule setMaxQueueingTimeoutMs(int maxQueueingTimeoutMs) {
         this.maxQueueingTimeoutMs = maxQueueingTimeoutMs;
         return this;
+    }
+
+    public boolean isUseResponseBody() {
+        return useResponseBody;
+    }
+
+    public void setUseResponseBody(boolean useResponseBody) {
+        this.useResponseBody = useResponseBody;
+    }
+
+    public Integer getLimitStatus() {
+        return limitStatus;
+    }
+
+    public void setLimitStatus(Integer limitStatus) {
+        this.limitStatus = limitStatus;
+    }
+
+    public String getLimitResponseBody() {
+        return limitResponseBody;
+    }
+
+    public void setLimitResponseBody(String limitResponseBody) {
+        this.limitResponseBody = limitResponseBody;
     }
 
     @Override

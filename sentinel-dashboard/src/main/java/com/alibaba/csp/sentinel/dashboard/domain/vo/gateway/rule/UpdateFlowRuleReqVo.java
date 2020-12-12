@@ -43,6 +43,13 @@ public class UpdateFlowRuleReqVo {
 
     private GatewayParamFlowItemVo paramItem;
 
+    //是否使用自定义返回的流控报文
+    private boolean useResponseBody;
+    //返回自定义http status
+    private Integer limitStatus;
+    //返回自定义报文内容
+    private String limitResponseBody;
+
     public Long getId() {
         return id;
     }
@@ -121,5 +128,29 @@ public class UpdateFlowRuleReqVo {
 
     public void setParamItem(GatewayParamFlowItemVo paramItem) {
         this.paramItem = paramItem;
+    }
+
+    public boolean isUseResponseBody() {
+        return useResponseBody;
+    }
+
+    public void setUseResponseBody(boolean useResponseBody) {
+        this.useResponseBody = useResponseBody;
+    }
+
+    public Integer getLimitStatus() {
+        return limitStatus;
+    }
+
+    public void setLimitStatus(Integer limitStatus) {
+        this.limitStatus = limitStatus;
+    }
+
+    public String getLimitResponseBody() {
+        return limitResponseBody;
+    }
+
+    public void setLimitResponseBody(String limitResponseBody) {
+        this.limitResponseBody = limitResponseBody;
     }
 }

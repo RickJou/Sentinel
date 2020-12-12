@@ -31,7 +31,10 @@ final class GatewayRuleConverter {
             .setControlBehavior(rule.getControlBehavior())
             .setCount(rule.getCount())
             .setGrade(rule.getGrade())
-            .setMaxQueueingTimeMs(rule.getMaxQueueingTimeoutMs());
+            .setMaxQueueingTimeMs(rule.getMaxQueueingTimeoutMs())
+            .setUseResponseBody(rule.isUseResponseBody())
+            .setLimitStatus(rule.getLimitStatus())
+            .setLimitResponseBody(rule.getLimitResponseBody());
     }
 
     static ParamFlowItem generateNonMatchPassParamItem() {
@@ -54,7 +57,10 @@ final class GatewayRuleConverter {
             .setBurstCount(gatewayRule.getBurst())
             .setControlBehavior(gatewayRule.getControlBehavior())
             .setMaxQueueingTimeMs(gatewayRule.getMaxQueueingTimeoutMs())
-            .setParamIdx(idx);
+            .setParamIdx(idx)
+            .setUseResponseBody(gatewayRule.isUseResponseBody())
+            .setLimitStatus(gatewayRule.getLimitStatus())
+            .setLimitResponseBody(gatewayRule.getLimitResponseBody());
     }
 
     /**
@@ -73,7 +79,11 @@ final class GatewayRuleConverter {
             .setBurstCount(gatewayRule.getBurst())
             .setControlBehavior(gatewayRule.getControlBehavior())
             .setMaxQueueingTimeMs(gatewayRule.getMaxQueueingTimeoutMs())
-            .setParamIdx(idx);
+            .setParamIdx(idx)
+            .setUseResponseBody(gatewayRule.isUseResponseBody())
+            .setLimitStatus(gatewayRule.getLimitStatus())
+            .setLimitResponseBody(gatewayRule.getLimitResponseBody());
+
         GatewayParamFlowItem gatewayItem = gatewayRule.getParamItem();
         // Apply the current idx to gateway rule item.
         gatewayItem.setIndex(idx);

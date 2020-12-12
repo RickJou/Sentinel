@@ -132,7 +132,7 @@
 					</div>
 
 					<div class="form-group" ng-if="currentRule.grade==1">
-						<label class="col-sm-2 control-label">流控方式</label>
+						<label class="col-sm-2 control-label">流控方式114</label>
 						<div class="col-sm-9">
 							<div class="form-control highlight-border" align="center">
 								<input type="radio" name="controlBehavior" value="0" checked ng-model='currentRule.controlBehavior' title="快速失败" />&nbsp;快速失败&nbsp;&nbsp;
@@ -158,6 +158,32 @@
 							</div>
 						</div>
 					</div>
+
+					<!--自定义属性-->
+					<div class="form-group">
+						<label class="col-sm-2 control-label">限流报文</label>
+						<div class="col-sm-2">
+							<label class="checkbox-inline">
+								<input type="checkbox" ng-if="currentRule.useResponseBody == true" checked ng-click="notUseLimitResponseBody()"/>
+								<input type="checkbox" ng-if="currentRule.useResponseBody == false" ng-click="useLimitResponseBody()"/>
+							</label>
+						</div>
+					</div>
+					<div class="form-group" ng-if="currentRule.useResponseBody == true">
+						<label class="col-sm-2 control-label">返回码</label>
+						<div class="col-sm-9">
+							<input type="number" class="form-control" placeholder="http response status" ng-model='currentRule.limitStatus' />
+						</div>
+					</div>
+					<div class="form-group" ng-if="currentRule.useResponseBody == true">
+						<label class="col-sm-2 control-label">返回报文</label>
+						<div class="col-sm-9">
+							<input type="textarea" class="form-control" placeholder="response body" ng-model='currentRule.limitResponseBody' />
+						</div>
+					</div>
+
+
+
 				</form>
 			</div>
 			<div class="separator"></div>

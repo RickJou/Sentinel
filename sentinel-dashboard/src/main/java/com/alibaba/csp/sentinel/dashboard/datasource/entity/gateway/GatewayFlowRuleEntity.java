@@ -64,6 +64,16 @@ public class GatewayFlowRuleEntity implements RuleEntity {
 
     private GatewayParamFlowItemEntity paramItem;
 
+    //是否使用自定义返回的流控报文
+    private boolean useResponseBody;
+
+    //返回自定义http status
+    private Integer limitStatus;
+
+    //返回自定义报文内容
+    private String limitResponseBody;
+
+
     public static Long calIntervalSec(Long interval, Integer intervalUnit) {
         switch (intervalUnit) {
             case INTERVAL_UNIT_SECOND:
@@ -300,6 +310,30 @@ public class GatewayFlowRuleEntity implements RuleEntity {
 
     public void setMaxQueueingTimeoutMs(Integer maxQueueingTimeoutMs) {
         this.maxQueueingTimeoutMs = maxQueueingTimeoutMs;
+    }
+
+    public boolean isUseResponseBody() {
+        return useResponseBody;
+    }
+
+    public void setUseResponseBody(boolean useResponseBody) {
+        this.useResponseBody = useResponseBody;
+    }
+
+    public Integer getLimitStatus() {
+        return limitStatus;
+    }
+
+    public void setLimitStatus(Integer limitStatus) {
+        this.limitStatus = limitStatus;
+    }
+
+    public String getLimitResponseBody() {
+        return limitResponseBody;
+    }
+
+    public void setLimitResponseBody(String limitResponseBody) {
+        this.limitResponseBody = limitResponseBody;
     }
 
     @Override

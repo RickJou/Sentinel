@@ -32,7 +32,11 @@ public final class GatewayCallbackManager {
     /**
      * BlockRequestHandler: (serverExchange, exception) -> response
      */
-    private static volatile BlockRequestHandler blockHandler = new DefaultBlockRequestHandler();
+    //private static volatile BlockRequestHandler blockHandler = new DefaultBlockRequestHandler();
+    /**
+     * 使用自定义的返回报文代替默认的实现
+      */
+    private static volatile BlockRequestHandler blockHandler = new CustomerJsonResultBlockRequestHandler();
     /**
      * RequestOriginParser: (serverExchange) -> origin
      */

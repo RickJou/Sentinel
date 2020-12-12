@@ -63,6 +63,15 @@ public class ParamFlowRule extends AbstractRule {
     private int burstCount = 0;
     private long durationInSec = 1;
 
+    //是否使用自定义返回的流控报文
+    private boolean useResponseBody;
+
+    //返回自定义http status
+    private Integer limitStatus;
+
+    //返回自定义报文内容
+    private String limitResponseBody;
+
     /**
      * Original exclusion items of parameters.
      */
@@ -185,6 +194,33 @@ public class ParamFlowRule extends AbstractRule {
 
     public ParamFlowRule setClusterConfig(ParamFlowClusterConfig clusterConfig) {
         this.clusterConfig = clusterConfig;
+        return this;
+    }
+
+    public boolean isUseResponseBody() {
+        return useResponseBody;
+    }
+
+    public ParamFlowRule setUseResponseBody(boolean useResponseBody) {
+        this.useResponseBody = useResponseBody;
+        return this;
+    }
+
+    public Integer getLimitStatus() {
+        return limitStatus;
+    }
+
+    public ParamFlowRule setLimitStatus(Integer limitStatus) {
+        this.limitStatus = limitStatus;
+        return this;
+    }
+
+    public String getLimitResponseBody() {
+        return limitResponseBody;
+    }
+
+    public ParamFlowRule setLimitResponseBody(String limitResponseBody) {
+        this.limitResponseBody = limitResponseBody;
         return this;
     }
 

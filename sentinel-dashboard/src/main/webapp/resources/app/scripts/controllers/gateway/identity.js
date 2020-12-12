@@ -75,7 +75,10 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
         intervalUnit: 0,
         controlBehavior: 0,
         burst: 0,
-        maxQueueingTimeoutMs: 0
+        maxQueueingTimeoutMs: 0,
+        useResponseBody : false,
+        limitStatus : 429,
+        limitResponseBody : "{\"message\":\"flow limit\"}"
       };
 
       gatewayFlowRuleDialogScope.gatewayFlowRuleDialog = {
@@ -113,6 +116,18 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
         gatewayFlowRuleDialogScope.currentRule.paramItem.pattern = null;
       };
 
+      /*是否使用自定义返回报文*/
+      gatewayFlowRuleDialogScope.useLimitResponseBody = function() {
+        gatewayFlowRuleDialogScope.currentRule.useResponseBody = true;
+      };
+      gatewayFlowRuleDialogScope.notUseLimitResponseBody = function() {
+        gatewayFlowRuleDialogScope.currentRule.useResponseBody = false;
+        gatewayFlowRuleDialogScope.currentRule.limitStatus = 429;
+        gatewayFlowRuleDialogScope.currentRule.limitResponseBody="{\"message\":\"flow limit\"}";
+      };
+
+
+
       gatewayFlowRuleDialogScope.saveRule = saveGatewayFlowRule;
       gatewayFlowRuleDialogScope.saveRuleAndContinue = saveGatewayFlowRuleAndContinue;
       gatewayFlowRuleDialogScope.onOpenAdvanceClick = function () {
@@ -143,7 +158,7 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
           alert('失败!');
         }
       }).error((data, header, config, status) => {
-          alert('未知错误');
+          alert('错误:'+data);
       });
     }
 

@@ -240,6 +240,18 @@ public class GatewayFlowRuleController {
         entity.setGmtModified(date);
 
 
+        if (true == reqVo.isUseResponseBody()) {
+            //自定义返回报文参数
+            entity.setUseResponseBody(reqVo.isUseResponseBody());
+            entity.setLimitStatus(reqVo.getLimitStatus());
+            entity.setLimitResponseBody(reqVo.getLimitResponseBody());
+        } else {
+            //默认状态码和返回报文
+            entity.setLimitStatus(429);
+            entity.setLimitResponseBody("{\"message\":\"flow limit\"}");
+        }
+
+
         //保存规则至apollo
         refreshAllApolloRules(app);
         List<GatewayFlowRuleEntity> existsRules = repository.findAllByApp(app);
@@ -387,6 +399,17 @@ public class GatewayFlowRuleController {
 
         Date date = new Date();
         entity.setGmtModified(date);
+
+        if (true == reqVo.isUseResponseBody()) {
+            //自定义返回报文参数
+            entity.setUseResponseBody(reqVo.isUseResponseBody());
+            entity.setLimitStatus(reqVo.getLimitStatus());
+            entity.setLimitResponseBody(reqVo.getLimitResponseBody());
+        } else {
+            //默认状态码和返回报文
+            entity.setLimitStatus(429);
+            entity.setLimitResponseBody("{\"message\":\"flow limit\"}");
+        }
 
 
         //保存规则至apollo

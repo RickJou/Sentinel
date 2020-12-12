@@ -1,8 +1,8 @@
 # Sentinel Dashboard Frontend
 
-## Env Requirement
+## Env Requirement(不要使用6.x和15.x亲测无效)
 
-- Node.js > 6.x
+- Node.js = 8.x
 
 ## Code Guide
 

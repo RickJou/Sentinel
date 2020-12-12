@@ -95,7 +95,10 @@ app.controller('GatewayFlowCtl', ['$scope', '$stateParams', 'GatewayFlowService'
         intervalUnit: 0,
         controlBehavior: 0,
         burst: 0,
-        maxQueueingTimeoutMs: 0
+        maxQueueingTimeoutMs: 0,
+        useResponseBody : false,
+        limitStatus : 429,
+        limitResponseBody : "{\"message\":\"flow limit\"}"
       };
 
       $scope.gatewayFlowRuleDialog = {
@@ -150,6 +153,16 @@ app.controller('GatewayFlowCtl', ['$scope', '$stateParams', 'GatewayFlowService'
     $scope.notUseParamItemVal = function() {
       $scope.currentRule.paramItem.pattern = null;
       $scope.currentRule.paramItem.matchStrategy = null;
+    };
+
+    /*是否使用自定义返回报文*/
+    $scope.useLimitResponseBody = function() {
+      $scope.currentRule.useResponseBody = true;
+    };
+    $scope.notUseLimitResponseBody = function() {
+      $scope.currentRule.useResponseBody = false;
+      $scope.currentRule.limitStatus = 429;
+      $scope.currentRule.limitResponseBody="{\"message\":\"flow limit\"}";
     };
 
     function addNewRule(rule) {

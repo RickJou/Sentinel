@@ -94,6 +94,16 @@ public class FlowRule extends AbstractRule {
      */
     private TrafficShapingController controller;
 
+
+    //是否使用自定义返回的流控报文
+    private boolean useResponseBody;
+
+    //返回自定义http status
+    private Integer limitStatus;
+
+    //返回自定义报文内容
+    private String limitResponseBody;
+
     public int getControlBehavior() {
         return controlBehavior;
     }
@@ -181,6 +191,33 @@ public class FlowRule extends AbstractRule {
 
     public FlowRule setClusterConfig(ClusterFlowConfig clusterConfig) {
         this.clusterConfig = clusterConfig;
+        return this;
+    }
+
+    public boolean isUseResponseBody() {
+        return useResponseBody;
+    }
+
+    public FlowRule setUseResponseBody(boolean useResponseBody) {
+        this.useResponseBody = useResponseBody;
+        return this;
+    }
+
+    public Integer getLimitStatus() {
+        return limitStatus;
+    }
+
+    public FlowRule setLimitStatus(Integer limitStatus) {
+        this.limitStatus = limitStatus;
+        return this;
+    }
+
+    public String getLimitResponseBody() {
+        return limitResponseBody;
+    }
+
+    public FlowRule setLimitResponseBody(String limitResponseBody) {
+        this.limitResponseBody = limitResponseBody;
         return this;
     }
 
