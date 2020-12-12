@@ -226,22 +226,28 @@ public class ParamFlowRule extends AbstractRule {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
-        if (!super.equals(o)) { return false; }
+        if (this == o) return true;
+        if (!(o instanceof ParamFlowRule)) return false;
+        if (!super.equals(o)) return false;
 
-        ParamFlowRule that = (ParamFlowRule)o;
+        ParamFlowRule that = (ParamFlowRule) o;
 
-        if (grade != that.grade) { return false; }
-        if (Double.compare(that.count, count) != 0) { return false; }
-        if (controlBehavior != that.controlBehavior) { return false; }
-        if (maxQueueingTimeMs != that.maxQueueingTimeMs) { return false; }
-        if (burstCount != that.burstCount) { return false; }
-        if (durationInSec != that.durationInSec) { return false; }
-        if (clusterMode != that.clusterMode) { return false; }
-        if (!Objects.equals(paramIdx, that.paramIdx)) { return false; }
-        if (!Objects.equals(paramFlowItemList, that.paramFlowItemList)) { return false; }
-        return Objects.equals(clusterConfig, that.clusterConfig);
+        if (grade != that.grade) return false;
+        if (Double.compare(that.count, count) != 0) return false;
+        if (controlBehavior != that.controlBehavior) return false;
+        if (maxQueueingTimeMs != that.maxQueueingTimeMs) return false;
+        if (burstCount != that.burstCount) return false;
+        if (durationInSec != that.durationInSec) return false;
+        if (useResponseBody != that.useResponseBody) return false;
+        if (clusterMode != that.clusterMode) return false;
+        if (paramIdx != null ? !paramIdx.equals(that.paramIdx) : that.paramIdx != null) return false;
+        if (limitStatus != null ? !limitStatus.equals(that.limitStatus) : that.limitStatus != null) return false;
+        if (limitResponseBody != null ? !limitResponseBody.equals(that.limitResponseBody) : that.limitResponseBody != null)
+            return false;
+        if (paramFlowItemList != null ? !paramFlowItemList.equals(that.paramFlowItemList) : that.paramFlowItemList != null)
+            return false;
+        if (hotItems != null ? !hotItems.equals(that.hotItems) : that.hotItems != null) return false;
+        return clusterConfig != null ? clusterConfig.equals(that.clusterConfig) : that.clusterConfig == null;
     }
 
     @Override
@@ -251,12 +257,16 @@ public class ParamFlowRule extends AbstractRule {
         result = 31 * result + grade;
         result = 31 * result + (paramIdx != null ? paramIdx.hashCode() : 0);
         temp = Double.doubleToLongBits(count);
-        result = 31 * result + (int)(temp ^ (temp >>> 32));
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + controlBehavior;
         result = 31 * result + maxQueueingTimeMs;
         result = 31 * result + burstCount;
-        result = 31 * result + (int)(durationInSec ^ (durationInSec >>> 32));
+        result = 31 * result + (int) (durationInSec ^ (durationInSec >>> 32));
+        result = 31 * result + (useResponseBody ? 1 : 0);
+        result = 31 * result + (limitStatus != null ? limitStatus.hashCode() : 0);
+        result = 31 * result + (limitResponseBody != null ? limitResponseBody.hashCode() : 0);
         result = 31 * result + (paramFlowItemList != null ? paramFlowItemList.hashCode() : 0);
+        result = 31 * result + (hotItems != null ? hotItems.hashCode() : 0);
         result = 31 * result + (clusterMode ? 1 : 0);
         result = 31 * result + (clusterConfig != null ? clusterConfig.hashCode() : 0);
         return result;

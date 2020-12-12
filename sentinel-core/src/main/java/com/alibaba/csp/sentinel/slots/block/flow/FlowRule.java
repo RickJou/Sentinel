@@ -223,21 +223,28 @@ public class FlowRule extends AbstractRule {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
-        if (!super.equals(o)) { return false; }
+        if (this == o) return true;
+        if (!(o instanceof FlowRule)) return false;
+        if (!super.equals(o)) return false;
 
-        FlowRule rule = (FlowRule)o;
+        FlowRule flowRule = (FlowRule) o;
 
-        if (grade != rule.grade) { return false; }
-        if (Double.compare(rule.count, count) != 0) { return false; }
-        if (strategy != rule.strategy) { return false; }
-        if (controlBehavior != rule.controlBehavior) { return false; }
-        if (warmUpPeriodSec != rule.warmUpPeriodSec) { return false; }
-        if (maxQueueingTimeMs != rule.maxQueueingTimeMs) { return false; }
-        if (clusterMode != rule.clusterMode) { return false; }
-        if (refResource != null ? !refResource.equals(rule.refResource) : rule.refResource != null) { return false; }
-        return clusterConfig != null ? clusterConfig.equals(rule.clusterConfig) : rule.clusterConfig == null;
+        if (grade != flowRule.grade) return false;
+        if (Double.compare(flowRule.count, count) != 0) return false;
+        if (strategy != flowRule.strategy) return false;
+        if (controlBehavior != flowRule.controlBehavior) return false;
+        if (warmUpPeriodSec != flowRule.warmUpPeriodSec) return false;
+        if (maxQueueingTimeMs != flowRule.maxQueueingTimeMs) return false;
+        if (clusterMode != flowRule.clusterMode) return false;
+        if (useResponseBody != flowRule.useResponseBody) return false;
+        if (refResource != null ? !refResource.equals(flowRule.refResource) : flowRule.refResource != null)
+            return false;
+        if (clusterConfig != null ? !clusterConfig.equals(flowRule.clusterConfig) : flowRule.clusterConfig != null)
+            return false;
+        if (controller != null ? !controller.equals(flowRule.controller) : flowRule.controller != null) return false;
+        if (limitStatus != null ? !limitStatus.equals(flowRule.limitStatus) : flowRule.limitStatus != null)
+            return false;
+        return limitResponseBody != null ? limitResponseBody.equals(flowRule.limitResponseBody) : flowRule.limitResponseBody == null;
     }
 
     @Override
@@ -246,7 +253,7 @@ public class FlowRule extends AbstractRule {
         long temp;
         result = 31 * result + grade;
         temp = Double.doubleToLongBits(count);
-        result = 31 * result + (int)(temp ^ (temp >>> 32));
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + strategy;
         result = 31 * result + (refResource != null ? refResource.hashCode() : 0);
         result = 31 * result + controlBehavior;
@@ -254,6 +261,10 @@ public class FlowRule extends AbstractRule {
         result = 31 * result + maxQueueingTimeMs;
         result = 31 * result + (clusterMode ? 1 : 0);
         result = 31 * result + (clusterConfig != null ? clusterConfig.hashCode() : 0);
+        result = 31 * result + (controller != null ? controller.hashCode() : 0);
+        result = 31 * result + (useResponseBody ? 1 : 0);
+        result = 31 * result + (limitStatus != null ? limitStatus.hashCode() : 0);
+        result = 31 * result + (limitResponseBody != null ? limitResponseBody.hashCode() : 0);
         return result;
     }
 

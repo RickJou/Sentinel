@@ -169,21 +169,23 @@ public class GatewayFlowRule {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
+        if (this == o) return true;
+        if (!(o instanceof GatewayFlowRule)) return false;
 
-        GatewayFlowRule rule = (GatewayFlowRule)o;
+        GatewayFlowRule that = (GatewayFlowRule) o;
 
-        if (resourceMode != rule.resourceMode) { return false; }
-        if (grade != rule.grade) { return false; }
-        if (Double.compare(rule.count, count) != 0) { return false; }
-        if (intervalSec != rule.intervalSec) { return false; }
-        if (controlBehavior != rule.controlBehavior) { return false; }
-        if (burst != rule.burst) { return false; }
-        if (maxQueueingTimeoutMs != rule.maxQueueingTimeoutMs) { return false; }
-        if (!Objects.equals(resource, rule.resource)) { return false; }
-        return Objects.equals(paramItem, rule.paramItem);
-
+        if (resourceMode != that.resourceMode) return false;
+        if (grade != that.grade) return false;
+        if (Double.compare(that.count, count) != 0) return false;
+        if (intervalSec != that.intervalSec) return false;
+        if (controlBehavior != that.controlBehavior) return false;
+        if (burst != that.burst) return false;
+        if (maxQueueingTimeoutMs != that.maxQueueingTimeoutMs) return false;
+        if (useResponseBody != that.useResponseBody) return false;
+        if (resource != null ? !resource.equals(that.resource) : that.resource != null) return false;
+        if (paramItem != null ? !paramItem.equals(that.paramItem) : that.paramItem != null) return false;
+        if (limitStatus != null ? !limitStatus.equals(that.limitStatus) : that.limitStatus != null) return false;
+        return limitResponseBody != null ? limitResponseBody.equals(that.limitResponseBody) : that.limitResponseBody == null;
     }
 
     @Override
@@ -194,12 +196,15 @@ public class GatewayFlowRule {
         result = 31 * result + resourceMode;
         result = 31 * result + grade;
         temp = Double.doubleToLongBits(count);
-        result = 31 * result + (int)(temp ^ (temp >>> 32));
-        result = 31 * result + (int)(intervalSec ^ (intervalSec >>> 32));
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (int) (intervalSec ^ (intervalSec >>> 32));
         result = 31 * result + controlBehavior;
         result = 31 * result + burst;
         result = 31 * result + maxQueueingTimeoutMs;
         result = 31 * result + (paramItem != null ? paramItem.hashCode() : 0);
+        result = 31 * result + (useResponseBody ? 1 : 0);
+        result = 31 * result + (limitStatus != null ? limitStatus.hashCode() : 0);
+        result = 31 * result + (limitResponseBody != null ? limitResponseBody.hashCode() : 0);
         return result;
     }
 

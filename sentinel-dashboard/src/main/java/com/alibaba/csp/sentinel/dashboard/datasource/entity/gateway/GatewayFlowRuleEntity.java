@@ -338,30 +338,56 @@ public class GatewayFlowRuleEntity implements RuleEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
+        if (this == o) return true;
+        if (!(o instanceof GatewayFlowRuleEntity)) return false;
+
         GatewayFlowRuleEntity that = (GatewayFlowRuleEntity) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(app, that.app) &&
-                Objects.equals(ip, that.ip) &&
-                Objects.equals(port, that.port) &&
-                Objects.equals(gmtCreate, that.gmtCreate) &&
-                Objects.equals(gmtModified, that.gmtModified) &&
-                Objects.equals(resource, that.resource) &&
-                Objects.equals(resourceMode, that.resourceMode) &&
-                Objects.equals(grade, that.grade) &&
-                Objects.equals(count, that.count) &&
-                Objects.equals(interval, that.interval) &&
-                Objects.equals(intervalUnit, that.intervalUnit) &&
-                Objects.equals(controlBehavior, that.controlBehavior) &&
-                Objects.equals(burst, that.burst) &&
-                Objects.equals(maxQueueingTimeoutMs, that.maxQueueingTimeoutMs) &&
-                Objects.equals(paramItem, that.paramItem);
+
+        if (useResponseBody != that.useResponseBody) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (app != null ? !app.equals(that.app) : that.app != null) return false;
+        if (ip != null ? !ip.equals(that.ip) : that.ip != null) return false;
+        if (port != null ? !port.equals(that.port) : that.port != null) return false;
+        if (gmtCreate != null ? !gmtCreate.equals(that.gmtCreate) : that.gmtCreate != null) return false;
+        if (gmtModified != null ? !gmtModified.equals(that.gmtModified) : that.gmtModified != null) return false;
+        if (resource != null ? !resource.equals(that.resource) : that.resource != null) return false;
+        if (resourceMode != null ? !resourceMode.equals(that.resourceMode) : that.resourceMode != null) return false;
+        if (grade != null ? !grade.equals(that.grade) : that.grade != null) return false;
+        if (count != null ? !count.equals(that.count) : that.count != null) return false;
+        if (interval != null ? !interval.equals(that.interval) : that.interval != null) return false;
+        if (intervalUnit != null ? !intervalUnit.equals(that.intervalUnit) : that.intervalUnit != null) return false;
+        if (controlBehavior != null ? !controlBehavior.equals(that.controlBehavior) : that.controlBehavior != null)
+            return false;
+        if (burst != null ? !burst.equals(that.burst) : that.burst != null) return false;
+        if (maxQueueingTimeoutMs != null ? !maxQueueingTimeoutMs.equals(that.maxQueueingTimeoutMs) : that.maxQueueingTimeoutMs != null)
+            return false;
+        if (paramItem != null ? !paramItem.equals(that.paramItem) : that.paramItem != null) return false;
+        if (limitStatus != null ? !limitStatus.equals(that.limitStatus) : that.limitStatus != null) return false;
+        return limitResponseBody != null ? limitResponseBody.equals(that.limitResponseBody) : that.limitResponseBody == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, app, ip, port, gmtCreate, gmtModified, resource, resourceMode, grade, count, interval, intervalUnit, controlBehavior, burst, maxQueueingTimeoutMs, paramItem);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (app != null ? app.hashCode() : 0);
+        result = 31 * result + (ip != null ? ip.hashCode() : 0);
+        result = 31 * result + (port != null ? port.hashCode() : 0);
+        result = 31 * result + (gmtCreate != null ? gmtCreate.hashCode() : 0);
+        result = 31 * result + (gmtModified != null ? gmtModified.hashCode() : 0);
+        result = 31 * result + (resource != null ? resource.hashCode() : 0);
+        result = 31 * result + (resourceMode != null ? resourceMode.hashCode() : 0);
+        result = 31 * result + (grade != null ? grade.hashCode() : 0);
+        result = 31 * result + (count != null ? count.hashCode() : 0);
+        result = 31 * result + (interval != null ? interval.hashCode() : 0);
+        result = 31 * result + (intervalUnit != null ? intervalUnit.hashCode() : 0);
+        result = 31 * result + (controlBehavior != null ? controlBehavior.hashCode() : 0);
+        result = 31 * result + (burst != null ? burst.hashCode() : 0);
+        result = 31 * result + (maxQueueingTimeoutMs != null ? maxQueueingTimeoutMs.hashCode() : 0);
+        result = 31 * result + (paramItem != null ? paramItem.hashCode() : 0);
+        result = 31 * result + (useResponseBody ? 1 : 0);
+        result = 31 * result + (limitStatus != null ? limitStatus.hashCode() : 0);
+        result = 31 * result + (limitResponseBody != null ? limitResponseBody.hashCode() : 0);
+        return result;
     }
 
     @Override
