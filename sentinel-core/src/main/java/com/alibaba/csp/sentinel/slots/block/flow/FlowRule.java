@@ -223,27 +223,48 @@ public class FlowRule extends AbstractRule {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FlowRule)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o){ return true;}
+        if (!(o instanceof FlowRule)){ return false;}
+        if (!super.equals(o)){ return false;}
 
         FlowRule flowRule = (FlowRule) o;
 
-        if (grade != flowRule.grade) return false;
-        if (Double.compare(flowRule.count, count) != 0) return false;
-        if (strategy != flowRule.strategy) return false;
-        if (controlBehavior != flowRule.controlBehavior) return false;
-        if (warmUpPeriodSec != flowRule.warmUpPeriodSec) return false;
-        if (maxQueueingTimeMs != flowRule.maxQueueingTimeMs) return false;
-        if (clusterMode != flowRule.clusterMode) return false;
-        if (useResponseBody != flowRule.useResponseBody) return false;
-        if (refResource != null ? !refResource.equals(flowRule.refResource) : flowRule.refResource != null)
+        if (grade != flowRule.grade) {
             return false;
-        if (clusterConfig != null ? !clusterConfig.equals(flowRule.clusterConfig) : flowRule.clusterConfig != null)
+        }
+        if (Double.compare(flowRule.count, count) != 0) {
             return false;
-        if (controller != null ? !controller.equals(flowRule.controller) : flowRule.controller != null) return false;
-        if (limitStatus != null ? !limitStatus.equals(flowRule.limitStatus) : flowRule.limitStatus != null)
+        }
+        if (strategy != flowRule.strategy) {
             return false;
+        }
+        if (controlBehavior != flowRule.controlBehavior) {
+            return false;
+        }
+        if (warmUpPeriodSec != flowRule.warmUpPeriodSec) {
+            return false;
+        }
+        if (maxQueueingTimeMs != flowRule.maxQueueingTimeMs) {
+            return false;
+        }
+        if (clusterMode != flowRule.clusterMode) {
+            return false;
+        }
+        if (useResponseBody != flowRule.useResponseBody) {
+            return false;
+        }
+        if (refResource != null ? !refResource.equals(flowRule.refResource) : flowRule.refResource != null) {
+            return false;
+        }
+        if (clusterConfig != null ? !clusterConfig.equals(flowRule.clusterConfig) : flowRule.clusterConfig != null) {
+            return false;
+        }
+        if (controller != null ? !controller.equals(flowRule.controller) : flowRule.controller != null) {
+            return false;
+        }
+        if (limitStatus != null ? !limitStatus.equals(flowRule.limitStatus) : flowRule.limitStatus != null) {
+            return false;
+        }
         return limitResponseBody != null ? limitResponseBody.equals(flowRule.limitResponseBody) : flowRule.limitResponseBody == null;
     }
 

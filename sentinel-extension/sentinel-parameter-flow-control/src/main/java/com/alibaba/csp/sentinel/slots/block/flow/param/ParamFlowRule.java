@@ -226,27 +226,51 @@ public class ParamFlowRule extends AbstractRule {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ParamFlowRule)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o){ return true;}
+        if (!(o instanceof ParamFlowRule)){ return false;}
+        if (!super.equals(o)){ return false;}
 
         ParamFlowRule that = (ParamFlowRule) o;
 
-        if (grade != that.grade) return false;
-        if (Double.compare(that.count, count) != 0) return false;
-        if (controlBehavior != that.controlBehavior) return false;
-        if (maxQueueingTimeMs != that.maxQueueingTimeMs) return false;
-        if (burstCount != that.burstCount) return false;
-        if (durationInSec != that.durationInSec) return false;
-        if (useResponseBody != that.useResponseBody) return false;
-        if (clusterMode != that.clusterMode) return false;
-        if (paramIdx != null ? !paramIdx.equals(that.paramIdx) : that.paramIdx != null) return false;
-        if (limitStatus != null ? !limitStatus.equals(that.limitStatus) : that.limitStatus != null) return false;
-        if (limitResponseBody != null ? !limitResponseBody.equals(that.limitResponseBody) : that.limitResponseBody != null)
+        if (grade != that.grade) {
             return false;
-        if (paramFlowItemList != null ? !paramFlowItemList.equals(that.paramFlowItemList) : that.paramFlowItemList != null)
+        }
+        if (Double.compare(that.count, count) != 0) {
             return false;
-        if (hotItems != null ? !hotItems.equals(that.hotItems) : that.hotItems != null) return false;
+        }
+        if (controlBehavior != that.controlBehavior) {
+            return false;
+        }
+        if (maxQueueingTimeMs != that.maxQueueingTimeMs) {
+            return false;
+        }
+        if (burstCount != that.burstCount) {
+            return false;
+        }
+        if (durationInSec != that.durationInSec) {
+            return false;
+        }
+        if (useResponseBody != that.useResponseBody) {
+            return false;
+        }
+        if (clusterMode != that.clusterMode) {
+            return false;
+        }
+        if (paramIdx != null ? !paramIdx.equals(that.paramIdx) : that.paramIdx != null) {
+            return false;
+        }
+        if (limitStatus != null ? !limitStatus.equals(that.limitStatus) : that.limitStatus != null) {
+            return false;
+        }
+        if (limitResponseBody != null ? !limitResponseBody.equals(that.limitResponseBody) : that.limitResponseBody != null) {
+            return false;
+        }
+        if (paramFlowItemList != null ? !paramFlowItemList.equals(that.paramFlowItemList) : that.paramFlowItemList != null) {
+            return false;
+        }
+        if (hotItems != null ? !hotItems.equals(that.hotItems) : that.hotItems != null) {
+            return false;
+        }
         return clusterConfig != null ? clusterConfig.equals(that.clusterConfig) : that.clusterConfig == null;
     }
 

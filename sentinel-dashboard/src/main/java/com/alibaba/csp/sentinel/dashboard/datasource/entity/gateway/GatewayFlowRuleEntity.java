@@ -32,13 +32,21 @@ import java.util.Objects;
 public class GatewayFlowRuleEntity implements RuleEntity {
 
     /**间隔单位*/
-    /**0-秒*/
+    /**
+     * 0-秒
+     */
     public static final int INTERVAL_UNIT_SECOND = 0;
-    /**1-分*/
+    /**
+     * 1-分
+     */
     public static final int INTERVAL_UNIT_MINUTE = 1;
-    /**2-时*/
+    /**
+     * 2-时
+     */
     public static final int INTERVAL_UNIT_HOUR = 2;
-    /**3-天*/
+    /**
+     * 3-天
+     */
     public static final int INTERVAL_UNIT_DAY = 3;
 
     private Long id;
@@ -93,18 +101,18 @@ public class GatewayFlowRuleEntity implements RuleEntity {
 
     public static Object[] parseIntervalSec(Long intervalSec) {
         if (intervalSec % (60 * 60 * 24) == 0) {
-            return new Object[] {intervalSec / (60 * 60 * 24), INTERVAL_UNIT_DAY};
+            return new Object[]{intervalSec / (60 * 60 * 24), INTERVAL_UNIT_DAY};
         }
 
-        if (intervalSec % (60 * 60 ) == 0) {
-            return new Object[] {intervalSec / (60 * 60), INTERVAL_UNIT_HOUR};
+        if (intervalSec % (60 * 60) == 0) {
+            return new Object[]{intervalSec / (60 * 60), INTERVAL_UNIT_HOUR};
         }
 
         if (intervalSec % 60 == 0) {
-            return new Object[] {intervalSec / 60, INTERVAL_UNIT_MINUTE};
+            return new Object[]{intervalSec / 60, INTERVAL_UNIT_MINUTE};
         }
 
-        return new Object[] {intervalSec, INTERVAL_UNIT_SECOND};
+        return new Object[]{intervalSec, INTERVAL_UNIT_SECOND};
     }
 
     public GatewayFlowRule toGatewayFlowRule() {
@@ -338,31 +346,65 @@ public class GatewayFlowRuleEntity implements RuleEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof GatewayFlowRuleEntity)) return false;
+        if (this == o) {return true;}
+        if (!(o instanceof GatewayFlowRuleEntity)){ return false;}
 
         GatewayFlowRuleEntity that = (GatewayFlowRuleEntity) o;
 
-        if (useResponseBody != that.useResponseBody) return false;
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (app != null ? !app.equals(that.app) : that.app != null) return false;
-        if (ip != null ? !ip.equals(that.ip) : that.ip != null) return false;
-        if (port != null ? !port.equals(that.port) : that.port != null) return false;
-        if (gmtCreate != null ? !gmtCreate.equals(that.gmtCreate) : that.gmtCreate != null) return false;
-        if (gmtModified != null ? !gmtModified.equals(that.gmtModified) : that.gmtModified != null) return false;
-        if (resource != null ? !resource.equals(that.resource) : that.resource != null) return false;
-        if (resourceMode != null ? !resourceMode.equals(that.resourceMode) : that.resourceMode != null) return false;
-        if (grade != null ? !grade.equals(that.grade) : that.grade != null) return false;
-        if (count != null ? !count.equals(that.count) : that.count != null) return false;
-        if (interval != null ? !interval.equals(that.interval) : that.interval != null) return false;
-        if (intervalUnit != null ? !intervalUnit.equals(that.intervalUnit) : that.intervalUnit != null) return false;
-        if (controlBehavior != null ? !controlBehavior.equals(that.controlBehavior) : that.controlBehavior != null)
+        if (useResponseBody != that.useResponseBody) {
             return false;
-        if (burst != null ? !burst.equals(that.burst) : that.burst != null) return false;
-        if (maxQueueingTimeoutMs != null ? !maxQueueingTimeoutMs.equals(that.maxQueueingTimeoutMs) : that.maxQueueingTimeoutMs != null)
+        }
+        if (id != null ? !id.equals(that.id) : that.id != null) {
             return false;
-        if (paramItem != null ? !paramItem.equals(that.paramItem) : that.paramItem != null) return false;
-        if (limitStatus != null ? !limitStatus.equals(that.limitStatus) : that.limitStatus != null) return false;
+        }
+        if (app != null ? !app.equals(that.app) : that.app != null) {
+            return false;
+        }
+        if (ip != null ? !ip.equals(that.ip) : that.ip != null) {
+            return false;
+        }
+        if (port != null ? !port.equals(that.port) : that.port != null) {
+            return false;
+        }
+        if (gmtCreate != null ? !gmtCreate.equals(that.gmtCreate) : that.gmtCreate != null) {
+            return false;
+        }
+        if (gmtModified != null ? !gmtModified.equals(that.gmtModified) : that.gmtModified != null) {
+            return false;
+        }
+        if (resource != null ? !resource.equals(that.resource) : that.resource != null) {
+            return false;
+        }
+        if (resourceMode != null ? !resourceMode.equals(that.resourceMode) : that.resourceMode != null) {
+            return false;
+        }
+        if (grade != null ? !grade.equals(that.grade) : that.grade != null) {
+            return false;
+        }
+        if (count != null ? !count.equals(that.count) : that.count != null) {
+            return false;
+        }
+        if (interval != null ? !interval.equals(that.interval) : that.interval != null) {
+            return false;
+        }
+        if (intervalUnit != null ? !intervalUnit.equals(that.intervalUnit) : that.intervalUnit != null) {
+            return false;
+        }
+        if (controlBehavior != null ? !controlBehavior.equals(that.controlBehavior) : that.controlBehavior != null) {
+            return false;
+        }
+        if (burst != null ? !burst.equals(that.burst) : that.burst != null) {
+            return false;
+        }
+        if (maxQueueingTimeoutMs != null ? !maxQueueingTimeoutMs.equals(that.maxQueueingTimeoutMs) : that.maxQueueingTimeoutMs != null) {
+            return false;
+        }
+        if (paramItem != null ? !paramItem.equals(that.paramItem) : that.paramItem != null) {
+            return false;
+        }
+        if (limitStatus != null ? !limitStatus.equals(that.limitStatus) : that.limitStatus != null) {
+            return false;
+        }
         return limitResponseBody != null ? limitResponseBody.equals(that.limitResponseBody) : that.limitResponseBody == null;
     }
 
