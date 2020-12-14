@@ -317,6 +317,17 @@
         </pluginManagement>
     </build>
 
+    <!--test or pro nexus-->
+    <distributionManagement>
+        <repository>
+            <id>maven-releases</id>
+            <name>maven-releases</name>
+            <url>http://10.0.0.64:8081/repository/maven-releases/</url>
+            <uniqueVersion>false</uniqueVersion>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
+
     <profiles>
         <profile>
             <id>oss</id>
