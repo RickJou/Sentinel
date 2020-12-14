@@ -58,7 +58,7 @@ If your're using Maven, just add the following dependency in `pom.xml`.
 <dependency>
     <groupId>com.alibaba.csp</groupId>
     <artifactId>sentinel-core</artifactId>
-    <version>1.8.0</version>
+    <version>apollo-1.8.0</version>
 </dependency>
 ```
 
