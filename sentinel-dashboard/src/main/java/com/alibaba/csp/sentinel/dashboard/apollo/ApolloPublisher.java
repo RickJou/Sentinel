@@ -38,6 +38,9 @@ public class ApolloPublisher {
     @Autowired
     private ApolloOpenApiClient apolloOpenApiClient;
 
+    @Autowired
+    private ApolloConfig apolloConfig;
+
 
     /**
      * 推送及发布配置到apollo
@@ -61,7 +64,7 @@ public class ApolloPublisher {
         openItemDTO.setValue(JSON.toJSONString(rules));
         openItemDTO.setComment("sentinel add or update rules");
         openItemDTO.setDataChangeCreatedBy("apollo");
-        apolloOpenApiClient.createOrUpdateItem(appId, "DEV", "default", "IC.common-rules", openItemDTO);
+        apolloOpenApiClient.createOrUpdateItem(appId, apolloConfig.getEnv(), apolloConfig.getCluster(), apolloConfig.getNamespace(), openItemDTO);
 
         // Release configuration
         NamespaceReleaseDTO namespaceReleaseDTO = new NamespaceReleaseDTO();
@@ -69,7 +72,7 @@ public class ApolloPublisher {
         namespaceReleaseDTO.setReleaseComment("Modify or add configurations");
         namespaceReleaseDTO.setReleasedBy("apollo");
         namespaceReleaseDTO.setReleaseTitle("Modify or add configurations");
-        apolloOpenApiClient.publishNamespace(appId, "DEV", "default", "IC.common-rules", namespaceReleaseDTO);
+        apolloOpenApiClient.publishNamespace(appId, apolloConfig.getEnv(), apolloConfig.getCluster(), apolloConfig.getNamespace(), namespaceReleaseDTO);
     }
 
 

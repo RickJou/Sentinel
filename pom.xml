@@ -384,14 +384,25 @@
                 </plugins>
             </build>
             <distributionManagement>
+                <!--dev-->
+                <repository>
+                    <id>fengwo-maven-release</id>
+                    <url>http://172.16.0.204:8083/repository/maven-releases/</url>
+                </repository>
                 <snapshotRepository>
+                    <id>fengwo-maven-snapshot</id>
+                    <url>http://172.16.0.204:8083/repository/maven-snapshots/</url>
+                </snapshotRepository>
+
+                <!--uat-->
+                <!--<snapshotRepository>
                     <id>oss</id>
                     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
                 </snapshotRepository>
                 <repository>
                     <id>oss</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
+                </repository>-->
             </distributionManagement>
         </profile>
     </profiles>

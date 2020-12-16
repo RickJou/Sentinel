@@ -13,18 +13,24 @@
 
 ```
 npm install
+
+npm install -g cnpm -registry=https://registry.npm.taobao.org
 ```
 
 ## Start Development
 
 ```
 npm start
+
+cnpm start
 ```
 
 ## Build for production
 
 ```
 npm run build
+
+cnpm run build
 ```
 
 ## Credit
